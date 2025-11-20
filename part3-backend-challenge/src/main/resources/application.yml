@@ -1,0 +1,95 @@
+micronaut:
+  application:
+    name: payment-api
+  server:
+    port: 8080
+    cors:
+      enabled: true
+      configurations:
+        web:
+          allowed-origins:
+            - http://localhost:3000
+          allowed-methods:
+            - GET
+            - POST
+            - PUT
+            - DELETE
+            - OPTIONS
+            - HEAD
+          allowed-headers:
+            - "*"
+          exposed-headers:
+            - "*"
+          allow-credentials: true
+          max-age: 3600
+  router:
+    static-resources:
+      swagger:
+        paths: classpath:META-INF/swagger
+        mapping: /swagger/**
+      swagger-ui:
+        paths: classpath:META-INF/swagger/views/swagger-ui
+        mapping: /swagger-ui/**
+
+datasources:
+  default:
+    url: jdbc:postgresql://${DB_HOST:localhost}:${DB_PORT:5444}/${DB_NAME:payment_platform}
+    driverClassName: org.postgresql.Driver
+    username: ${DB_USER:admin}
+    password: ${DB_PASSWORD:admin}
+    dialect: POSTGRES
+    schema-generate: NONE
+    maximum-pool-size: 10
+    minimum-idle: 2
+    connection-timeout: 30000
+    validation-timeout: 5000
+    idle-timeout: 600000
+    max-lifetime: 1800000
+
+jpa:
+  default:
+    properties:
+      hibernate:
+        hbm2ddl:
+          auto: none
+        show_sql: false
+        format_sql: true
+        default_schema: operators
+
+jackson:
+  serialization:
+    writeDatesAsTimestamps: false
+    WRITE_DATES_AS_TIMESTAMPS: false
+  deserialization:
+    adjustDatesToContextTimeZone: false
+    ADJUST_DATES_TO_CONTEXT_TIME_ZONE: false
+  date-format: yyyy-MM-dd'T'HH:mm:ss'Z'
+  time-zone: UTC
+
+endpoints:
+  all:
+    enabled: true
+    sensitive: false
+  health:
+    enabled: true
+    sensitive: false
+    details-visible: ANONYMOUS
+  info:
+    enabled: true
+    sensitive: false
+
+logger:
+  levels:
+    com.payment: INFO
+    io.micronaut: INFO
+    io.micronaut.data: DEBUG
+
+# OpenAPI Configuration
+micronaut:
+  openapi:
+    enabled: true
+  views:
+    swagger:
+      enabled: true
+swagger-ui:
+  enabled: true

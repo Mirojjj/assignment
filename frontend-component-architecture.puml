@@ -1,0 +1,212 @@
+@startuml React Frontend - Component Architecture
+
+!define COMPONENT_COLOR #E3F2FD
+!define CONTAINER_COLOR #C8E6C9
+!define HOOK_COLOR #FFF9C4
+!define SERVICE_COLOR #FFE0B2
+
+title React Frontend - Component Architecture
+
+package "Application Entry" {
+  [App.tsx] as App #COMPONENT_COLOR
+  [main.tsx] as Main #COMPONENT_COLOR
+}
+
+package "Pages (Route Components)" <<Page>> {
+  [DashboardPage] #COMPONENT_COLOR
+  [MerchantDetailsPage] #COMPONENT_COLOR
+  [TransactionsPage] #COMPONENT_COLOR
+  [SettlementsPage] #COMPONENT_COLOR
+}
+
+package "Feature: Transaction Management" <<Feature>> {
+  
+  package "Components" {
+    rectangle "TransactionList" as TxnList #COMPONENT_COLOR {
+      - Display transaction table
+      - Pagination controls
+      - Row selection
+      - Sorting & filtering
+    }
+    
+    rectangle "TransactionFilters" as TxnFilters #COMPONENT_COLOR {
+      - Date range picker
+      - Status dropdown
+      - Search input
+      - Apply/Reset buttons
+    }
+    
+    rectangle "TransactionSummaryCards" as TxnSummary #COMPONENT_COLOR {
+      - Total transactions
+      - Total amount
+      - Success rate
+      - Failed count
+    }
+    
+    rectangle "TransactionDetailModal" as TxnModal #COMPONENT_COLOR {
+      - Transaction details
+      - Timeline view
+      - Related documents
+    }
+  }
+  
+  package "Hooks" {
+    rectangle "useTransactions" as UseTxn #HOOK_COLOR {
+      + fetchTransactions()
+      + refetch()
+      + isLoading: boolean
+      + error: Error | null
+      + data: Transaction[]
+    }
+    
+    rectangle "useTransactionFilters" as UseTxnFilters #HOOK_COLOR {
+      + filters: FilterState
+      + updateFilter()
+      + resetFilters()
+      + applyFilters()
+    }
+    
+    rectangle "useTransactionSummary" as UseTxnSummary #HOOK_COLOR {
+      + summary: SummaryData
+      + isLoading: boolean
+      + refresh()
+    }
+  }
+}
+
+package "Shared Components" <<UI Library>> {
+  [Button] #COMPONENT_COLOR
+  [Input] #COMPONENT_COLOR
+  [Table] #COMPONENT_COLOR
+  [Modal] #COMPONENT_COLOR
+  [Card] #COMPONENT_COLOR
+  [DatePicker] #COMPONENT_COLOR
+  [Pagination] #COMPONENT_COLOR
+  [LoadingSpinner] #COMPONENT_COLOR
+  [ErrorBoundary] #COMPONENT_COLOR
+}
+
+package "State Management" <<State>> {
+  
+  rectangle "TransactionContext" as TxnContext #CONTAINER_COLOR {
+    - transactions: Transaction[]
+    - filters: FilterState
+    - summary: SummaryData
+    + dispatch(action: Action)
+  }
+  
+  rectangle "AuthContext" as AuthContext #CONTAINER_COLOR {
+    - user: User | null
+    - isAuthenticated: boolean
+    - merchantId: string
+    + login()
+    + logout()
+  }
+  
+  rectangle "NotificationContext" as NotifContext #CONTAINER_COLOR {
+    - notifications: Notification[]
+    + showSuccess()
+    + showError()
+    + dismiss()
+  }
+}
+
+package "Services (API Layer)" <<API>> {
+  
+  rectangle "transactionService" as TxnService #SERVICE_COLOR {
+    + getTransactions(params)
+    + getTransactionById(id)
+    + getSummary(merchantId, dateRange)
+    + exportTransactions(params)
+  }
+  
+  rectangle "merchantService" as MerchantService #SERVICE_COLOR {
+    + getMerchantDetails(id)
+    + updateMerchant(id, data)
+  }
+  
+  rectangle "apiClient" as ApiClient #SERVICE_COLOR {
+    + get(url, config)
+    + post(url, data, config)
+    - interceptRequest()
+    - interceptResponse()
+    - handleError()
+  }
+}
+
+package "Utilities" <<Utils>> {
+  [dateUtils] #SERVICE_COLOR
+  [currencyFormatter] #SERVICE_COLOR
+  [validators] #SERVICE_COLOR
+  [constants] #SERVICE_COLOR
+}
+
+' Relationships
+Main --> App : renders
+
+App --> DashboardPage : route "/"
+App --> TransactionsPage : route "/transactions"
+App --> MerchantDetailsPage : route "/merchants/:id"
+
+App --> AuthContext : provides
+App --> NotifContext : provides
+App --> ErrorBoundary : wraps
+
+TransactionsPage --> TxnContext : provides
+TransactionsPage --> TxnList : renders
+TransactionsPage --> TxnFilters : renders
+TransactionsPage --> TxnSummary : renders
+
+TxnList --> UseTxn : uses
+TxnList --> Table : uses
+TxnList --> Pagination : uses
+TxnList --> LoadingSpinner : uses
+TxnList --> TxnModal : opens
+
+TxnFilters --> UseTxnFilters : uses
+TxnFilters --> DatePicker : uses
+TxnFilters --> Input : uses
+TxnFilters --> Button : uses
+
+TxnSummary --> UseTxnSummary : uses
+TxnSummary --> Card : uses
+
+UseTxn --> TxnService : calls API
+UseTxnSummary --> TxnService : calls API
+UseTxnFilters --> TxnContext : updates state
+
+TxnService --> ApiClient : uses
+MerchantService --> ApiClient : uses
+
+ApiClient --> AuthContext : gets token
+
+TxnList --> dateUtils : formats dates
+TxnSummary --> currencyFormatter : formats amounts
+
+note right of UseTxn
+  **Custom Hook Pattern:**
+  - Encapsulates data fetching logic
+  - React Query / SWR for caching
+  - Automatic refetch on focus
+  - Error handling built-in
+end note
+
+note bottom of TxnContext
+  **State Management Strategy:**
+  - Context API for global state
+  - useReducer for complex state
+  - Local state for UI-only data
+  - Consider Zustand for larger apps
+end note
+
+note left of ApiClient
+  **API Client Features:**
+  - Axios-based HTTP client
+  - Request/Response interceptors
+  - JWT token injection
+  - Error normalization
+  - Retry logic for failed requests
+  - Base URL configuration
+end note
+
+@enduml

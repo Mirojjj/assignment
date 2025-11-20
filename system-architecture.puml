@@ -1,0 +1,151 @@
+@startuml Payment Platform - System Architecture
+
+!define RECTANGLE_COLOR #E8F5E9
+!define DATABASE_COLOR #E3F2FD
+!define EXTERNAL_COLOR #FFF3E0
+!define QUEUE_COLOR #F3E5F5
+
+title Payment Platform - High-Level Architecture
+
+' External Systems
+package "External Systems" <<Cloud>> #EXTERNAL_COLOR {
+  [Payment Gateway\n(Visa/Mastercard)] as Gateway
+  [Bank APIs] as Bank
+  [Fraud Detection\nService] as Fraud
+}
+
+' Frontend Layer
+package "Frontend Layer" <<Browser>> {
+  [React Dashboard\n(Merchant Portal)] as ReactUI
+  [Admin Console] as AdminUI
+}
+
+' API Gateway
+node "API Gateway\n(Kong/NGINX)" as APIGateway {
+  [Rate Limiting]
+  [Authentication]
+  [Load Balancing]
+}
+
+' Backend Services
+package "Backend Services (Micronaut)" <<Microservices>> {
+  
+  rectangle "Merchant Service" as MerchantSvc #RECTANGLE_COLOR {
+    [Merchant\nController]
+    [Merchant\nService Layer]
+    [Merchant\nRepository]
+  }
+  
+  rectangle "Transaction Service" as TxnSvc #RECTANGLE_COLOR {
+    [Transaction\nController]
+    [Transaction\nService Layer]
+    [Transaction\nRepository]
+  }
+  
+  rectangle "Settlement Service" as SettlementSvc #RECTANGLE_COLOR {
+    [Settlement\nController]
+    [Settlement\nProcessor]
+    [Reconciliation\nEngine]
+  }
+  
+  rectangle "Reporting Service" as ReportingSvc #RECTANGLE_COLOR {
+    [Report\nController]
+    [Aggregation\nEngine]
+    [Export Service]
+  }
+}
+
+' Message Queue
+queue "Message Broker\n(RabbitMQ/Kafka)" as MessageQueue #QUEUE_COLOR {
+  [Transaction Events]
+  [Settlement Events]
+  [Notification Events]
+}
+
+' Data Layer
+package "Data Layer" <<Database>> {
+  database "PostgreSQL\n(Primary DB)" as PostgresDB #DATABASE_COLOR {
+    [transaction_master]
+    [transaction_details]
+    [merchants]
+    [settlements]
+  }
+  
+  database "Redis\n(Cache)" as RedisCache #DATABASE_COLOR {
+    [Session Cache]
+    [Query Cache]
+    [Rate Limit Data]
+  }
+  
+  database "Elasticsearch\n(Search & Analytics)" as Elastic #DATABASE_COLOR {
+    [Transaction Logs]
+    [Audit Trails]
+    [Search Indexes]
+  }
+}
+
+' Background Workers
+package "Background Workers" <<System>> {
+  [Settlement\nProcessor Job]
+  [Report\nGenerator Job]
+  [Notification\nWorker]
+}
+
+' Relationships
+ReactUI -down-> APIGateway : HTTPS
+AdminUI -down-> APIGateway : HTTPS
+
+APIGateway -down-> MerchantSvc : REST API
+APIGateway -down-> TxnSvc : REST API
+APIGateway -down-> SettlementSvc : REST API
+APIGateway -down-> ReportingSvc : REST API
+
+MerchantSvc -down-> PostgresDB
+TxnSvc -down-> PostgresDB
+SettlementSvc -down-> PostgresDB
+ReportingSvc -down-> PostgresDB
+
+MerchantSvc -right-> RedisCache : Cache
+TxnSvc -right-> RedisCache : Cache
+ReportingSvc -right-> RedisCache : Cache
+
+TxnSvc -down-> MessageQueue : Publish Events
+SettlementSvc -down-> MessageQueue : Publish Events
+MerchantSvc -down-> MessageQueue : Publish Events
+
+MessageQueue -down-> [Settlement\nProcessor Job] : Consume
+MessageQueue -down-> [Notification\nWorker] : Consume
+MessageQueue -down-> Elastic : Log Events
+
+TxnSvc -up-> Gateway : Process Payment
+TxnSvc -up-> Fraud : Check Fraud
+SettlementSvc -up-> Bank : Transfer Funds
+
+[Report\nGenerator Job] -up-> PostgresDB : Read
+[Report\nGenerator Job] -up-> Elastic : Query
+
+note right of APIGateway
+  **API Gateway Responsibilities:**
+  - JWT Authentication
+  - Rate Limiting (1000 req/min)
+  - Request Routing
+  - SSL Termination
+end note
+
+note bottom of PostgresDB
+  **Database Strategy:**
+  - Master-Replica setup
+  - Connection pooling (HikariCP)
+  - Partitioning by date
+  - Read replicas for reports
+end note
+
+note left of MessageQueue
+  **Event-Driven Architecture:**
+  - Async processing
+  - Decoupled services
+  - Event sourcing for audit
+  - At-least-once delivery
+end note
+
+@enduml

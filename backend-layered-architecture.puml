@@ -1,0 +1,218 @@
+@startuml Backend Service - Layered Architecture
+
+!define CONTROLLER_COLOR #BBDEFB
+!define SERVICE_COLOR #C8E6C9
+!define REPOSITORY_COLOR #FFE0B2
+!define ENTITY_COLOR #F8BBD0
+
+title Micronaut Backend - Layered Architecture Pattern
+
+package "Presentation Layer" <<Web>> {
+  
+  class MerchantController <<@Controller>> #CONTROLLER_COLOR {
+    - MerchantService merchantService
+    + getMerchantById(id: String): HttpResponse<MerchantDTO>
+    + getAllMerchants(pageable: Pageable): Page<MerchantDTO>
+    + createMerchant(request: CreateMerchantRequest): HttpResponse<MerchantDTO>
+    + updateMerchant(id: String, request: UpdateMerchantRequest): HttpResponse<MerchantDTO>
+  }
+  
+  class TransactionController <<@Controller>> #CONTROLLER_COLOR {
+    - TransactionService transactionService
+    + getTransactionsByMerchant(merchantId: String, filter: TransactionFilter): HttpResponse<TransactionPageDTO>
+    + getTransactionById(id: String): HttpResponse<TransactionDTO>
+    + getTransactionSummary(merchantId: String, dateRange: DateRange): HttpResponse<SummaryDTO>
+  }
+  
+  class GlobalExceptionHandler <<@Error>> #CONTROLLER_COLOR {
+    + handleValidationException(ex: ValidationException): HttpResponse<ErrorResponse>
+    + handleNotFoundException(ex: NotFoundException): HttpResponse<ErrorResponse>
+    + handleGenericException(ex: Exception): HttpResponse<ErrorResponse>
+  }
+}
+
+package "Service Layer (Business Logic)" <<Business>> {
+  
+  interface MerchantService <<@Singleton>> #SERVICE_COLOR {
+    + findById(id: String): Optional<Merchant>
+    + findAll(pageable: Pageable): Page<Merchant>
+    + create(merchant: Merchant): Merchant
+    + update(id: String, merchant: Merchant): Merchant
+    + validateMerchantStatus(merchantId: String): boolean
+  }
+  
+  class MerchantServiceImpl <<@Singleton>> #SERVICE_COLOR {
+    - MerchantRepository merchantRepository
+    - EventPublisher eventPublisher
+    - CacheManager cacheManager
+    + findById(id: String): Optional<Merchant>
+    + create(merchant: Merchant): Merchant
+    - publishMerchantCreatedEvent(merchant: Merchant)
+  }
+  
+  interface TransactionService <<@Singleton>> #SERVICE_COLOR {
+    + findByMerchant(merchantId: String, filter: TransactionFilter): Page<Transaction>
+    + findById(id: String): Optional<Transaction>
+    + calculateSummary(merchantId: String, dateRange: DateRange): TransactionSummary
+    + processTransaction(request: TransactionRequest): Transaction
+  }
+  
+  class TransactionServiceImpl <<@Singleton>> #SERVICE_COLOR {
+    - TransactionRepository transactionRepository
+    - MerchantService merchantService
+    - EventPublisher eventPublisher
+    + findByMerchant(merchantId: String, filter: TransactionFilter): Page<Transaction>
+    + processTransaction(request: TransactionRequest): Transaction
+    - validateTransaction(request: TransactionRequest): ValidationResult
+  }
+}
+
+package "Repository Layer (Data Access)" <<Data>> {
+  
+  interface MerchantRepository <<@Repository>> #REPOSITORY_COLOR {
+    + findById(id: Long): Optional<MerchantEntity>
+    + findByMerchantId(merchantId: String): Optional<MerchantEntity>
+    + findAll(pageable: Pageable): Page<MerchantEntity>
+    + save(entity: MerchantEntity): MerchantEntity
+    + existsByEmail(email: String): boolean
+  }
+  
+  interface TransactionRepository <<@Repository>> #REPOSITORY_COLOR {
+    + findById(id: Long): Optional<TransactionEntity>
+    + findByMerchantIdAndDateRange(merchantId: String, start: Instant, end: Instant, pageable: Pageable): Page<TransactionEntity>
+    + calculateSummary(merchantId: String, start: Instant, end: Instant): TransactionSummaryProjection
+    + save(entity: TransactionEntity): TransactionEntity
+  }
+  
+  note right of TransactionRepository
+    **Custom Query Methods:**
+    @Query("SELECT new SummaryProjection(...) FROM...")
+    Optimized aggregation queries
+    using CTEs and indexes
+  end note
+}
+
+package "Domain Layer (Entities)" <<Entity>> {
+  
+  class MerchantEntity <<@Entity>> #ENTITY_COLOR {
+    - Long id
+    - String merchantId
+    - String name
+    - String email
+    - String status
+    - Instant createdAt
+    - Instant updatedAt
+  }
+  
+  class TransactionEntity <<@Entity>> #ENTITY_COLOR {
+    - Long id
+    - String txnId
+    - String merchantId
+    - BigDecimal amount
+    - String currency
+    - String status
+    - Instant txnDateTime
+    - String cardType
+  }
+  
+  class TransactionDetailEntity <<@Entity>> #ENTITY_COLOR {
+    - Long id
+    - String txnDetailId
+    - Long masterTxnId
+    - String detailType
+    - BigDecimal amount
+    - Instant localTxnDateTime
+  }
+}
+
+package "DTO Layer (Data Transfer)" <<DTO>> {
+  
+  class MerchantDTO {
+    - String merchantId
+    - String name
+    - String email
+    - String status
+    - String createdAt
+  }
+  
+  class TransactionDTO {
+    - String txnId
+    - BigDecimal amount
+    - String status
+    - String timestamp
+    - List<TransactionDetailDTO> details
+  }
+  
+  class TransactionPageDTO {
+    - String merchantId
+    - DateRangeDTO dateRange
+    - SummaryDTO summary
+    - List<TransactionDTO> transactions
+    - PaginationDTO pagination
+  }
+}
+
+package "Infrastructure" <<Infrastructure>> {
+  
+  class EventPublisher <<@Singleton>> {
+    + publishEvent(event: DomainEvent)
+  }
+  
+  class CacheManager <<@Singleton>> {
+    + get(key: String): Optional<Object>
+    + put(key: String, value: Object)
+    + evict(key: String)
+  }
+  
+  class ModelMapper <<@Singleton>> {
+    + toDTO(entity: Entity): DTO
+    + toEntity(dto: DTO): Entity
+  }
+}
+
+' Relationships
+MerchantController --> MerchantService : uses
+TransactionController --> TransactionService : uses
+MerchantController --> GlobalExceptionHandler : handles exceptions
+
+MerchantService <|-- MerchantServiceImpl : implements
+TransactionService <|-- TransactionServiceImpl : implements
+
+MerchantServiceImpl --> MerchantRepository : uses
+MerchantServiceImpl --> EventPublisher : publishes events
+MerchantServiceImpl --> CacheManager : caches data
+
+TransactionServiceImpl --> TransactionRepository : uses
+TransactionServiceImpl --> MerchantService : validates merchant
+TransactionServiceImpl --> EventPublisher : publishes events
+
+MerchantRepository --> MerchantEntity : manages
+TransactionRepository --> TransactionEntity : manages
+
+MerchantController --> MerchantDTO : returns
+TransactionController --> TransactionPageDTO : returns
+TransactionController --> TransactionDTO : returns
+
+MerchantServiceImpl --> ModelMapper : converts
+TransactionServiceImpl --> ModelMapper : converts
+
+TransactionEntity "1" --> "*" TransactionDetailEntity : has details
+
+note bottom of MerchantServiceImpl
+  **Service Layer Responsibilities:**
+  - Business logic validation
+  - Transaction management (@Transactional)
+  - Event publishing for audit
+  - Cache management
+  - Cross-cutting concerns
+end note
+
+note bottom of TransactionRepository
+  **Repository Pattern:**
+  - Micronaut Data JPA
+  - Compile-time query validation
+  - Automatic implementation
+  - Custom native queries for complex operations
+end note
+
+@enduml
