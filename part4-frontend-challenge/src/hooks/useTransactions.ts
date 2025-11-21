@@ -39,11 +39,32 @@ export const useTransactions = (
     try {
       setLoading(true);
       setError(null);
+
       const response = await getTransactions(merchantId, filters);
-      setData(response as any);
+
+      // NEW STRUCTURE: extract response.data
+      const payload = response.data;
+
+      setData({
+        transactions: payload.transactions.map((t: any) => ({
+          txnId: t.txnId,
+          merchantId: t.merchantId,
+          amount: t.amount,
+          currency: t.currency,
+          status: t.status,
+          cardType: t.cardType,
+          cardLast4: t.cardLast4,
+          authCode: t.authCode,
+          txnDate: t.txnDate,
+          createdAt: t.createdAt,
+        })),
+
+        totalTransactions: payload.totalTransactions,
+        page: payload.page,
+        size: payload.size,
+      });
     } catch (err) {
       setError(err as Error);
-      console.error('Error fetching transactions:', err);
     } finally {
       setLoading(false);
     }
@@ -51,7 +72,14 @@ export const useTransactions = (
 
   useEffect(() => {
     fetchTransactions();
-  }, [merchantId, filters.page, filters.size, filters.status, filters.startDate, filters.endDate]);
+  }, [
+    merchantId,
+    filters.page,
+    filters.size,
+    filters.status,
+    filters.startDate,
+    filters.endDate,
+  ]);
 
   return {
     data,

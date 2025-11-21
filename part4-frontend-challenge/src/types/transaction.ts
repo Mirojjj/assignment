@@ -60,7 +60,7 @@ export interface FilterState {
 
 export const DEFAULT_FILTERS: FilterState = {
   page: 0,
-  size: 20,
+  size: 10,
   startDate: '2025-11-16',
   endDate: '2025-11-18',
   status: undefined,
