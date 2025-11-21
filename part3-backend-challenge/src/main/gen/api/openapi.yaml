@@ -1,0 +1,183 @@
+openapi: 3.0.1
+info:
+  contact:
+    email: api@payment.com
+    name: Payment Team
+  description: API for managing merchant transactions and payments
+  title: Payment Platform API
+  version: "1.0"
+servers:
+- url: /
+paths:
+  /api/v1/merchants/{merchantId}/transactions:
+    get:
+      description: "Returns paginated list of transactions for a merchant. TODO: Implement\
+        \ proper pagination, filtering, and database queries."
+      operationId: getTransactions
+      parameters:
+      - explode: false
+        in: path
+        name: merchantId
+        required: true
+        schema:
+          type: string
+        style: simple
+      - explode: true
+        in: query
+        name: page
+        required: false
+        schema:
+          format: int32
+          nullable: true
+          type: integer
+        style: form
+      - explode: true
+        in: query
+        name: size
+        required: false
+        schema:
+          format: int32
+          nullable: true
+          type: integer
+        style: form
+      - explode: true
+        in: query
+        name: startDate
+        required: false
+        schema:
+          nullable: true
+          type: string
+        style: form
+      - explode: true
+        in: query
+        name: endDate
+        required: false
+        schema:
+          nullable: true
+          type: string
+        style: form
+      - explode: true
+        in: query
+        name: status
+        required: false
+        schema:
+          nullable: true
+          type: string
+        style: form
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                additionalProperties: true
+                type: object
+          description: getTransactions 200 response
+      summary: Get merchant transactions
+      tags:
+      - Transactions
+      x-accepts:
+      - application/json
+    post:
+      description: "Creates a new transaction for a merchant. TODO: Add validation,\
+        \ error handling, and business logic."
+      operationId: createTransaction
+      parameters:
+      - explode: false
+        in: path
+        name: merchantId
+        required: true
+        schema:
+          type: string
+        style: simple
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TransactionMaster'
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                additionalProperties: true
+                type: object
+          description: createTransaction 200 response
+      summary: Create new transaction
+      tags:
+      - Transactions
+      x-content-type: application/json
+      x-accepts:
+      - application/json
+  /api/v1/status:
+    get:
+      description: Returns the status of the API
+      operationId: status
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                additionalProperties: true
+                type: object
+          description: status 200 response
+      summary: API status check
+      tags:
+      - Status
+      x-accepts:
+      - application/json
+components:
+  schemas:
+    TransactionMaster:
+      example:
+        gpIssuerId: 1
+        amount: 5.962133916683182
+        authCode: authCode
+        gpAcquirerId: 6
+        localTxnDateTime: 2000-01-23T04:56:07.000+00:00
+        cardType: cardType
+        responseCode: responseCode
+        createdAt: 2000-01-23T04:56:07.000+00:00
+        merchantId: merchantId
+        currency: currency
+        txnDate: 2000-01-23T04:56:07.000+00:00
+        cardLast4: cardLast4
+        txnId: 0
+        status: status
+      properties:
+        txnId:
+          format: int64
+          type: integer
+        merchantId:
+          type: string
+        gpAcquirerId:
+          format: int64
+          type: integer
+        gpIssuerId:
+          format: int64
+          type: integer
+        txnDate:
+          format: date-time
+          type: string
+        localTxnDateTime:
+          format: date-time
+          type: string
+        amount:
+          type: number
+        currency:
+          type: string
+        status:
+          type: string
+        cardType:
+          type: string
+        cardLast4:
+          type: string
+        authCode:
+          type: string
+        responseCode:
+          type: string
+        createdAt:
+          format: date-time
+          type: string
+      type: object
+

@@ -165,6 +165,12 @@
             <version>3.24.2</version>
             <scope>test</scope>
         </dependency>
+
+        <dependency>
+            <groupId>io.soabase.record-builder</groupId>
+            <artifactId>record-builder-core</artifactId>
+            <version>32</version>
+        </dependency>
     </dependencies>
 
     <build>
@@ -211,6 +217,22 @@
                         <arg>-Amicronaut.processing.group=com.payment</arg>
                         <arg>-Amicronaut.processing.module=payment-api</arg>
                     </compilerArgs>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+
+                    <annotationProcessorPaths combine.children="append">
+
+                        <path>
+                            <groupId>io.soabase.record-builder</groupId>
+                            <artifactId>record-builder-processor</artifactId>
+                            <version>32</version>
+                        </path>
+
+                    </annotationProcessorPaths>
                 </configuration>
             </plugin>
             <plugin>
