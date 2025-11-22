@@ -6,7 +6,7 @@ import com.payment.payloads.TransactionRequestPayload;
 import com.payment.repository.TransactionRepository;
 import com.payment.responses.TransactionResponse;
 import com.payment.responses.TransactionResponseBuilder;
-import com.payment.services.FetchMerchantsService;
+import com.payment.services.TransactionService;
 import jakarta.inject.Inject;
 
 import java.time.Instant;
@@ -15,17 +15,17 @@ import java.util.Map;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
-public class fetchMerchantServiceImpl implements FetchMerchantsService {
-    private final Logger logger = Logger.getLogger(fetchMerchantServiceImpl.class.getName());
+public class TransactionServiceImpl implements TransactionService {
+    private final Logger logger = Logger.getLogger(TransactionServiceImpl.class.getName());
     private final TransactionRepository transactionRepository;
 
     @Inject
-    public fetchMerchantServiceImpl(TransactionRepository transactionRepository) {
+    public TransactionServiceImpl(TransactionRepository transactionRepository) {
         this.transactionRepository = transactionRepository;
     }
 
     @Override
-    public TransactionResponse fetch(TransactionRequestPayload request) {
+    public TransactionResponse fetchTransactionsList(TransactionRequestPayload request) {
         logger.info("merchant id: " + request.merchantId());
 
         try {
@@ -111,6 +111,8 @@ public class fetchMerchantServiceImpl implements FetchMerchantsService {
             throw new RuntimeException("Failed to fetch transactions: " + e.getMessage(), e);
         }
     }
+
+
 
     private Map<Long, List<TransactionDetailDto>> fetchTransactionDetails(List<TransactionsDto> transactionsList) {
         if (transactionsList.isEmpty()) {

@@ -1,14 +1,16 @@
 package com.payment.controller;
 
+import com.payment.dto.transactionDto.CreateTransactionRequestPayloadWithMerchantId;
+import com.payment.dto.transactionDto.CreateTransactionRequestPayloadWithMerchantIdBuilder;
+import com.payment.payloads.CreateTransactionRequestPayload;
+import com.payment.payloads.CreateTransactionRequestPayloadBuilder;
 import com.payment.payloads.TransactionRequestPayload;
 import com.payment.payloads.TransactionRequestPayloadBuilder;
 import com.payment.rest.RestResponse;
+import com.payment.usecases.CreateTransactionControllerUseCase;
 import com.payment.usecases.TransactionControllerUseCase;
 import com.payment.usecases.UseCaseContext;
-import io.micronaut.http.annotation.Controller;
-import io.micronaut.http.annotation.Get;
-import io.micronaut.http.annotation.PathVariable;
-import io.micronaut.http.annotation.QueryValue;
+import io.micronaut.http.annotation.*;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.inject.Inject;
@@ -95,10 +97,12 @@ public class TransactionController {
 
     private final Logger logger = Logger.getLogger(TransactionController.class.getName());
     private TransactionControllerUseCase transactionControllerUseCase;
+    private CreateTransactionControllerUseCase createTransactionControllerUseCase;
 
     @Inject
-    public TransactionController(TransactionControllerUseCase transactionControllerUseCase) {
+    public TransactionController(TransactionControllerUseCase transactionControllerUseCase, CreateTransactionControllerUseCase createTransactionControllerUseCase) {
         this.transactionControllerUseCase = transactionControllerUseCase;
+        this.createTransactionControllerUseCase = createTransactionControllerUseCase;
     }
 
     @Get("/{merchantId}/transactions")
@@ -113,7 +117,6 @@ public class TransactionController {
                                                              @QueryValue Optional<String> endDate,
                                                              @QueryValue Optional<String> status) {
         logger.info("Get merchant transactions for merchant " + merchantId);
-        try {
             TransactionRequestPayload request = TransactionRequestPayloadBuilder.builder()
                     .merchantId(merchantId)
                     .page(page)
@@ -127,7 +130,7 @@ public class TransactionController {
 
             if (result.hasError()) {
                 // Could be validation or not found
-                return RestResponse.error("404", "Merchant or transactions not found");
+                return RestResponse.error("400", "Error while fetching transactions list");
             }
 
             // If no transactions found, return 404 explicitly
@@ -137,12 +140,40 @@ public class TransactionController {
 
             return RestResponse.success(result.data());
 
-        } catch (IllegalArgumentException e) {
-            logger.warning("Invalid request: " + e.getMessage());
-            return RestResponse.error("400", "Invalid request parameters: " + e.getMessage());
-        } catch (Exception e) {
-            logger.severe("Error fetching transactions: " + e.getMessage());
-            return RestResponse.error("500", "Internal server error while fetching transactions");
         }
+
+
+    @Post("/{merchantId}/transactions")
+    @Operation(
+            summary = "Create new transaction",
+            description = "Creates a new transaction for a merchant. TODO: Add validation, error handling, and business logic."
+    )
+    public RestResponse createTransaction(@PathVariable String merchantId, @Body CreateTransactionRequestPayload request){
+        logger.info("Received create transaction payload" + request);
+
+        CreateTransactionRequestPayloadWithMerchantId requestEntity = toCreateTransactionRequestPayloadWithMerchantId(merchantId, request);
+
+
+        var result = this.createTransactionControllerUseCase.execute(UseCaseContext.empty(), requestEntity);
+        if (result.hasError()) {
+            return RestResponse.error("400", "Error inserting data into db");
+        }
+
+        return RestResponse.success(result.data());
+    }
+
+    private CreateTransactionRequestPayloadWithMerchantId toCreateTransactionRequestPayloadWithMerchantId(String merchantId, CreateTransactionRequestPayload request) {
+        return CreateTransactionRequestPayloadWithMerchantIdBuilder.builder()
+                .merchantId(merchantId)
+                .amount(request.amount())
+                .authCode(request.authCode())
+                .gpAcquirerId(request.gpAcquirerId())
+                .gpIssuerId(request.gpIssuerId())
+                .cardLast4(request.cardLast4())
+                .currency(request.currency())
+                .responseCode(request.responseCode())
+                .cardType(request.cardType())
+                .build();
     }
 }
+
