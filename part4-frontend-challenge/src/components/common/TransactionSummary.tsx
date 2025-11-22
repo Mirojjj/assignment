@@ -14,7 +14,7 @@ interface TransactionSummaryProps {
 export const TransactionSummary = ({ transactions, totalTransactions }: TransactionSummaryProps) => {
   const totalAmount = transactions.reduce((sum, txn) => sum + txn.amount, 0);
   const currency = transactions[0]?.currency || 'USD';
-  
+
   const statusCounts = transactions.reduce((acc, txn) => {
     const status = txn.status.toLowerCase();
     acc[status] = (acc[status] || 0) + 1;

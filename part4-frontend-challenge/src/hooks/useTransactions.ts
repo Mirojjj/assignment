@@ -42,29 +42,50 @@ export const useTransactions = (
 
       const response = await getTransactions(merchantId, filters);
 
-      // NEW STRUCTURE: extract response.data
-      const payload = response.data;
+      // Check server response code
+      if (response.response_code !== '200') {
+        setError(new Error(response.response_message || 'Unknown server error'));
+        setData(null);
+        return;
+      }
+
+      const payload = response?.data;
+
+      if (!payload) {
+        setError(new Error('No data returned from API'));
+        setData(null);
+        return;
+      }
+
+      // Safe mapping of transactions
+      const transactions: Transaction[] = Array.isArray(payload.transactions)
+        ? payload.transactions.map((t: any) => ({
+          txnId: t.txnId ?? 0,
+          merchantId: t.merchantId ?? '',
+          amount: t.amount ?? 0,
+          currency: t.currency ?? '',
+          status: t.status ?? '',
+          cardType: t.cardType ?? '',
+          cardLast4: t.cardLast4 ?? '',
+          authCode: t.authCode ?? '',
+          txnDate: t.timestamp ?? '',
+          createdAt: t.createdAt ?? '',
+        }))
+        : [];
+
+      const totalTransactions = payload.summary?.totalTransactions ?? 0;
+      const page = payload.pagination?.page ?? 0;
+      const size = payload.pagination?.size ?? 0;
 
       setData({
-        transactions: payload.transactions.map((t: any) => ({
-          txnId: t.txnId,
-          merchantId: t.merchantId,
-          amount: t.amount,
-          currency: t.currency,
-          status: t.status,
-          cardType: t.cardType,
-          cardLast4: t.cardLast4,
-          authCode: t.authCode,
-          txnDate: t.txnDate,
-          createdAt: t.createdAt,
-        })),
-
-        totalTransactions: payload.totalTransactions,
-        page: payload.page,
-        size: payload.size,
+        transactions,
+        totalTransactions,
+        page,
+        size,
       });
     } catch (err) {
       setError(err as Error);
+      setData(null);
     } finally {
       setLoading(false);
     }
