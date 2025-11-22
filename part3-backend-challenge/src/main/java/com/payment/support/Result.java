@@ -1,7 +1,10 @@
 package com.payment.support;
 
+import io.micronaut.serde.annotation.Serdeable;
+
 import java.util.Optional;
 
+@Serdeable
 public record Result<T>(T data,
                         Error error) {
 

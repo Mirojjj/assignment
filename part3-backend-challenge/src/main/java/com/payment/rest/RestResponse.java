@@ -10,7 +10,7 @@ public record RestResponse<T>(String response_code, String response_message, T  
 
     public static <T> RestResponse success() {
         return RestResponseBuilder.builder()
-                .response_code("0")
+                .response_code("200")
                 .response_message("SUCCESS")
                 .data(null)
                 .build();
@@ -18,7 +18,7 @@ public record RestResponse<T>(String response_code, String response_message, T  
 
     public static <T> RestResponse success(T data) {
         return RestResponseBuilder.builder()
-                .response_code("0")
+                .response_code("200")
                 .response_message("SUCCESS")
                 .data(data)
                 .build();

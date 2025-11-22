@@ -21,6 +21,7 @@ import jakarta.inject.Inject;
 import reactor.core.publisher.Mono;
 
 import java.net.http.HttpResponse;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.logging.Logger;
@@ -122,20 +123,36 @@ public class TransactionController {
                                                              @QueryValue Optional<String> endDate,
                                                              @QueryValue Optional<String> status) {
         logger.info("Get merchant transactions for merchant " + merchantId);
+        try {
+            TransactionRequestPayload request = TransactionRequestPayloadBuilder.builder()
+                    .merchantId(merchantId)
+                    .page(page)
+                    .size(size)
+                    .startDate(startDate)
+                    .endDate(endDate)
+                    .status(status)
+                    .build();
 
-        TransactionRequestPayload request = TransactionRequestPayloadBuilder.builder()
-                .merchantId(merchantId)
-                .page(page)
-                .size(size)
-                .startDate(startDate)
-                .endDate(endDate)
-                .status(status)
-                .build();
+            var result = this.transactionControllerUseCase.execute(UseCaseContext.empty(), request);
 
-        var result = this.transactionControllerUseCase.execute(UseCaseContext.empty(), request);
-        if(result.hasError()){
-            return RestResponse.error("400", "error while fetching data");
+            if (result.hasError()) {
+                // Could be validation or not found
+                return RestResponse.error("404", "Merchant or transactions not found");
+            }
+
+            // If no transactions found, return 404 explicitly
+            if (result.data() == null) {
+                return RestResponse.error("404", "No transactions found for merchant " + merchantId);
+            }
+
+            return RestResponse.success(result.data());
+
+        } catch (IllegalArgumentException e) {
+            logger.warning("Invalid request: " + e.getMessage());
+            return RestResponse.error("400", "Invalid request parameters: " + e.getMessage());
+        } catch (Exception e) {
+            logger.severe("Error fetching transactions: " + e.getMessage());
+            return RestResponse.error("500", "Internal server error while fetching transactions");
         }
-        return RestResponse.success(result.data());
     }
 }
