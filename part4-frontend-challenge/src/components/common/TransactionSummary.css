@@ -1,59 +1,121 @@
-.transaction-summary {
+.transaction-summary-container {
+  margin-bottom: 30px;
+}
+
+.summary-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.summary-header h2 {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #111827;
+  margin: 0;
+}
+
+.add-transaction-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background-color: #4f46e5;
+  color: white;
+  border: none;
+  padding: 10px 16px;
+  border-radius: 8px;
+  font-weight: 500;
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.add-transaction-btn:hover {
+  background-color: #4338ca;
+}
+
+.summary-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 1.5rem;
-  margin: 2rem 0;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 20px;
 }
 
 .summary-card {
   background: white;
-  padding: 1.5rem;
-  border-radius: 8px;
-  box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1);
-  border-left: 4px solid #e2e8f0;
+  border-radius: 16px;
+  padding: 24px;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  border: 1px solid #f3f4f6;
   transition: transform 0.2s, box-shadow 0.2s;
 }
 
 .summary-card:hover {
   transform: translateY(-2px);
-  box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+.card-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.25rem;
+}
+
+.total-icon {
+  background-color: #e0e7ff;
+  color: #4f46e5;
+}
+
+.completed-icon {
+  background-color: #dcfce7;
+  color: #166534;
+}
+
+.pending-icon {
+  background-color: #fef3c7;
+  color: #92400e;
+}
+
+.failed-icon {
+  background-color: #fee2e2;
+  color: #991b1b;
+}
+
+.card-content {
+  display: flex;
+  flex-direction: column;
 }
 
 .summary-label {
   font-size: 0.875rem;
+  color: #6b7280;
   font-weight: 500;
-  color: #64748b;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  margin-bottom: 0.5rem;
+  margin-bottom: 4px;
 }
 
 .summary-value {
-  font-size: 2rem;
+  font-size: 1.5rem;
   font-weight: 700;
-  color: #0f172a;
+  color: #111827;
+  line-height: 1.2;
 }
 
-.summary-value.amount {
-  color: #059669;
-}
-
-.summary-value.completed {
-  color: #059669;
-}
-
-.summary-value.pending {
-  color: #d97706;
-}
-
-.summary-value.failed {
-  color: #dc2626;
+.summary-subtext {
+  font-size: 0.75rem;
+  color: #9ca3af;
+  margin-top: 4px;
 }
 
 @media (max-width: 768px) {
   .transaction-summary {
     grid-template-columns: repeat(2, 1fr);
-    gap: 1rem;
   }
 
   .summary-card {

@@ -1,0 +1,473 @@
+.merchant-detail-container {
+  padding: 40px;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+  background-color: #f9fafb;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.detail-section {
+  background: #ffffff;
+  border-radius: 16px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  padding: 30px;
+  border: 1px solid #e5e7eb;
+}
+
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 30px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid #f3f4f6;
+}
+
+.section-header h2 {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #111827;
+  margin: 0;
+}
+
+.minimal-input-group {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.minimal-input-group label {
+  font-size: 0.875rem;
+  color: #6b7280;
+  font-weight: 500;
+}
+
+.minimal-input-group input {
+  padding: 8px 12px;
+  border-radius: 8px;
+  border: 1px solid #e5e7eb;
+  font-size: 0.875rem;
+  color: #374151;
+  background-color: #f9fafb;
+  transition: all 0.2s;
+  outline: none;
+}
+
+.minimal-input-group input:focus {
+  border-color: #6366f1;
+  background-color: #fff;
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+}
+
+/* Merchant Section Specifics */
+.merchant-content {
+  display: grid;
+  grid-template-columns: 300px 1fr;
+  gap: 40px;
+}
+
+.merchant-identity {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding-right: 40px;
+  border-right: 1px solid #f3f4f6;
+}
+
+.merchant-logo {
+  width: 120px;
+  height: 120px;
+  object-fit: contain;
+  border-radius: 50%;
+  border: 4px solid #f9fafb;
+  margin-bottom: 20px;
+  background: #fff;
+}
+
+.identity-text h3 {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #111827;
+  margin: 0 0 10px 0;
+}
+
+.status-badge {
+  display: inline-block;
+  padding: 4px 12px;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  margin-bottom: 10px;
+}
+
+.status-badge.active {
+  background-color: #dcfce7;
+  color: #166534;
+}
+
+.status-badge.inactive {
+  background-color: #fee2e2;
+  color: #991b1b;
+}
+
+.status-badge.pending {
+  background-color: #fef3c7;
+  color: #92400e;
+}
+
+.merchant-type {
+  display: block;
+  color: #6b7280;
+  font-size: 0.875rem;
+  margin-bottom: 15px;
+}
+
+.website-link {
+  color: #4f46e5;
+  font-size: 0.875rem;
+  font-weight: 500;
+  text-decoration: none;
+}
+
+.website-link:hover {
+  text-decoration: underline;
+}
+
+.merchant-info-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 20px;
+  align-content: start;
+}
+
+.info-item {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.info-item .label {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #9ca3af;
+  font-weight: 600;
+}
+
+.info-item .value {
+  font-size: 1rem;
+  color: #374151;
+  font-weight: 500;
+}
+
+.tags-container {
+  grid-column: 2;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 20px;
+}
+
+.tag-pill {
+  background-color: #f3f4f6;
+  color: #4b5563;
+  padding: 4px 12px;
+  border-radius: 6px;
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+/* Transactions Section Specifics */
+.controls-bar {
+  display: flex;
+  gap: 30px;
+  align-items: center;
+}
+
+.date-range-group {
+  display: flex;
+  gap: 15px;
+  padding-left: 30px;
+  border-left: 1px solid #f3f4f6;
+}
+
+.transactions-content {
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+}
+
+.summary-cards {
+  display: flex;
+  gap: 20px;
+}
+
+.summary-card {
+  flex: 1;
+  background: #f9fafb;
+  padding: 20px;
+  border-radius: 12px;
+  border: 1px solid #f3f4f6;
+}
+
+.summary-label {
+  display: block;
+  font-size: 0.875rem;
+  color: #6b7280;
+  margin-bottom: 8px;
+}
+
+.summary-value {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #111827;
+}
+
+.currency {
+  font-size: 1rem;
+  color: #9ca3af;
+  font-weight: 500;
+}
+
+.chart-container {
+  margin-top: 10px;
+}
+
+/* States */
+.loading-state,
+.error-state {
+  text-align: center;
+  padding: 40px;
+  color: #6b7280;
+  font-weight: 500;
+}
+
+.error-state {
+  color: #ef4444;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .merchant-content {
+    grid-template-columns: 1fr;
+  }
+
+  .merchant-identity {
+    border-right: none;
+    border-bottom: 1px solid #f3f4f6;
+    padding-right: 0;
+    padding-bottom: 30px;
+    margin-bottom: 30px;
+  }
+
+  .section-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 20px;
+  }
+
+  .controls-bar {
+    flex-direction: column;
+    align-items: flex-start;
+    width: 100%;
+  }
+
+  .date-range-group {
+    padding-left: 0;
+    border-left: none;
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .minimal-input-group {
+    width: 100%;
+  }
+
+  .minimal-input-group input {
+    flex: 1;
+  }
+}
+
+/* Recent Transactions List */
+.recent-transactions {
+  margin-top: 40px;
+  background: #fff;
+  border-radius: 12px;
+  border: 1px solid #f3f4f6;
+  padding: 20px;
+}
+
+.recent-transactions h3 {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #111827;
+  margin-bottom: 20px;
+}
+
+.transaction-list-header {
+  display: grid;
+  grid-template-columns: 1fr 1.5fr 1.5fr 1fr;
+  padding: 10px 15px;
+  background: #f9fafb;
+  border-radius: 8px;
+  margin-bottom: 10px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #6b7280;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.transaction-item {
+  display: grid;
+  grid-template-columns: 1fr 1.5fr 1.5fr 1fr;
+  padding: 12px 15px;
+  border-bottom: 1px solid #f3f4f6;
+  align-items: center;
+  transition: background-color 0.2s;
+}
+
+.transaction-item:last-child {
+  border-bottom: none;
+}
+
+.transaction-item:hover {
+  background-color: #f9fafb;
+}
+
+.txn-id {
+  font-family: 'Courier New', monospace;
+  font-size: 0.875rem;
+  color: #6b7280;
+}
+
+.txn-date {
+  font-size: 0.875rem;
+  color: #374151;
+}
+
+.txn-amount {
+  font-weight: 600;
+  color: #111827;
+}
+
+.txn-status {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: capitalize;
+  text-align: center;
+  width: fit-content;
+}
+
+.txn-status.completed {
+  background-color: #dcfce7;
+  color: #166534;
+}
+
+.txn-status.pending {
+  background-color: #fef3c7;
+  color: #92400e;
+}
+
+.txn-status.failed {
+  background-color: #fee2e2;
+  color: #991b1b;
+}
+
+.txn-status.reversed {
+  background-color: #f3f4f6;
+  color: #374151;
+}
+
+/* Calendar Input Styling */
+.calendar-input-container {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.calendar-input-container label {
+  font-size: 0.75rem;
+  color: #6b7280;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.input-wrapper {
+  display: flex;
+  align-items: center;
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  padding: 8px 12px;
+  gap: 10px;
+  transition: all 0.2s;
+  min-width: 160px;
+}
+
+.input-wrapper:focus-within {
+  border-color: #6366f1;
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+}
+
+.calendar-icon {
+  color: #9ca3af;
+  font-size: 1rem;
+}
+
+.input-wrapper input[type="date"] {
+  border: none;
+  outline: none;
+  background: transparent;
+  font-family: 'Inter', sans-serif;
+  color: #374151;
+  font-size: 0.875rem;
+  width: 100%;
+  padding: 0;
+}
+
+/* Remove default styles if needed, but keeping native picker is usually better for accessibility */
+
+/* Make date inputs visible and minimalistic */
+input[type="date"] {
+  padding: 6px 10px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 14px;
+  color: #333;
+  /* Text color */
+  background-color: #fff;
+  /* Ensure visible */
+  appearance: none;
+  /* Remove default styling */
+  -webkit-appearance: none;
+  -moz-appearance: none;
+}
+
+/* Optional: add icon inside input */
+.input-wrapper {
+  display: flex;
+  align-items: center;
+  position: relative;
+}
+
+.calendar-icon {
+  position: absolute;
+  left: 10px;
+  color: #888;
+}
+
+.input-wrapper input[type="date"] {
+  padding-left: 30px;
+  /* leave space for icon */
+}

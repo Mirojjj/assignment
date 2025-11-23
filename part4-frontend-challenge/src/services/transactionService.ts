@@ -1,5 +1,5 @@
-import { get } from './api';
-import { TransactionResponse, FilterState } from '../types/transaction';
+import { get, post } from './api';
+import { TransactionResponse, FilterState, CreateTransactionPayload, CreateTransactionResponse } from '../types/transaction';
 
 /**
  * Transaction Service
@@ -32,12 +32,32 @@ export const getTransactions = async (
 
   // TODO: Make API call
   const url = `${MERCHANT_BASE}/${merchantId}/transactions`;
-  
+
   try {
     const response = await get<TransactionResponse>(url, { params });
     return response;
   } catch (error) {
     console.error('Error fetching transactions:', error);
+    throw error;
+  }
+};
+
+/**
+ * Create a new transaction
+ * 
+ * @param transactionData - The transaction data to create
+ * @returns Promise with the created transaction
+ */
+export const createTransaction = async (
+  transactionData: CreateTransactionPayload
+): Promise<CreateTransactionResponse> => {
+  const url = `${MERCHANT_BASE}/transactions`;
+
+  try {
+    const response = await post<CreateTransactionResponse>(url, transactionData);
+    return response;
+  } catch (error) {
+    console.error('Error creating transaction:', error);
     throw error;
   }
 };
@@ -55,5 +75,6 @@ export const getTransactionById = async (
 
 export default {
   getTransactions,
+  createTransaction,
   getTransactionById,
 };

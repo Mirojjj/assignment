@@ -1,0 +1,184 @@
+.merchant-list-container {
+  padding: 2rem;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  color: #333;
+}
+
+.header {
+  font-size: 2rem;
+  font-weight: 700;
+  margin-bottom: 1.5rem;
+}
+
+/* Filters */
+
+.search-input, .filter-select {
+  flex: 1;
+  min-width: 200px;
+  padding: 0.6rem 1rem;
+  border-radius: 10px;
+  border: 1px solid #ccc;
+  font-size: 0.95rem;
+  background-color: #fff; /* White background */
+  color: #333; /* Dark text for readability */
+  box-shadow: 0 2px 6px rgba(0,0,0,0.08); /* Subtle shadow */
+  transition: all 0.2s;
+}
+
+.search-input:focus, .filter-select:focus {
+  outline: none;
+  border-color: #4f46e5; /* Blue focus ring */
+  box-shadow: 0 0 0 3px rgba(79,70,229,0.15); /* Focus shadow */
+}
+
+/* Table */
+.table-container {
+  overflow-x: auto;
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+thead {
+  background: #f0f0f0;
+  text-transform: uppercase;
+  font-size: 0.85rem;
+  letter-spacing: 0.5px;
+}
+
+th, td {
+  padding: 1rem;
+  text-align: left;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+tbody tr:hover {
+  background: #fafafa;
+}
+
+/* Merchant info */
+.merchant-info {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.merchant-info img {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  object-fit: cover;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+}
+
+.merchant-name {
+  font-weight: 600;
+}
+
+.merchant-website {
+  font-size: 0.85rem;
+  color: #4f46e5;
+  text-decoration: none;
+}
+
+.merchant-website:hover {
+  text-decoration: underline;
+}
+
+/* Status badge */
+.status {
+  padding: 0.25rem 0.5rem;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  display: inline-block;
+  text-align: center;
+}
+
+.status.active {
+  background: #d1fae5;
+  color: #065f46;
+}
+
+.status.inactive {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+/* No data */
+.no-data {
+  text-align: center;
+  padding: 2rem 0;
+  color: #777;
+  font-weight: 500;
+}
+
+/* Pagination */
+.pagination {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 1.5rem;
+}
+
+.pagination button {
+  padding: 0.5rem 0.9rem;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  background: #fff;
+  cursor: pointer;
+  font-weight: 500;
+  transition: all 0.2s;
+}
+
+.pagination button:hover:not(:disabled) {
+  background: #f0f0f0;
+}
+
+.pagination button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.pagination button.active {
+  background: #4f46e5;
+  color: #fff;
+  border-color: #4f46e5;
+}
+
+.ellipsis {
+  padding: 0 0.5rem;
+  font-weight: 600;
+  color: #666;
+}
+
+/* Loading */
+.loading {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 16rem;
+  font-size: 1.2rem;
+  color: #555;
+}
+
+/* Responsive */
+@media screen and (max-width: 768px) {
+  .filters {
+    flex-direction: column;
+  }
+  th, td {
+    padding: 0.75rem;
+  }
+  .merchant-info img {
+    width: 40px;
+    height: 40px;
+  }
+}

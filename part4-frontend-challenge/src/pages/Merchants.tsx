@@ -1,5 +1,5 @@
 import './Merchants.css';
-
+import { useNavigate } from 'react-router-dom';
 /**
  * Merchants Page Component
  * 
@@ -29,6 +29,25 @@ import './Merchants.css';
  *    - PUT /api/v1/merchants/{id} - Update merchant
  */
 export const Merchants = () => {
+
+  const navigate = useNavigate();
+
+  const handleMerchantClick = () => {
+    navigate(`/merchantlist`);
+  };
+
+  const handleAddMerchantClick = () =>{
+    navigate('/addMerchant');
+  }
+
+  const handleEditMerchantClick = () =>{
+    navigate('/editMerchant')
+  }
+
+  const handleMerchantDetailClick = () =>{
+    navigate('/merchantDetails')
+  }
+
   return (
     <main className="container">
       <div className="placeholder-page">
@@ -42,7 +61,10 @@ export const Merchants = () => {
         </div>
 
         <div className="feature-grid">
-          <div className="feature-card">
+          <div className="feature-card"
+            onClick={handleMerchantClick}
+            style={{ cursor: 'pointer' }} 
+          >
             <div className="feature-icon">📋</div>
             <h3>Merchant List <span style={{ backgroundColor: '#667eea', color: 'white', padding: '2px 8px', borderRadius: '8px', fontSize: '12px', marginLeft: '8px' }}>30 pts</span></h3>
             <p>View and search all registered merchants</p>
@@ -55,7 +77,10 @@ export const Merchants = () => {
             </ul>
           </div>
 
-          <div className="feature-card">
+          <div className="feature-card"
+            onClick={handleAddMerchantClick}
+            style={{ cursor: 'pointer' }} 
+          >
             <div className="feature-icon">➕</div>
             <h3>Add New Merchant <span style={{ backgroundColor: '#667eea', color: 'white', padding: '2px 8px', borderRadius: '8px', fontSize: '12px', marginLeft: '8px' }}>25 pts</span></h3>
             <p>Register new merchants to the platform</p>
@@ -68,7 +93,10 @@ export const Merchants = () => {
             </ul>
           </div>
 
-          <div className="feature-card">
+          <div className="feature-card"
+          onClick={handleEditMerchantClick}
+          style={{ cursor: 'pointer' }} 
+          >
             <div className="feature-icon">✏️</div>
             <h3>Edit Merchant Details <span style={{ backgroundColor: '#667eea', color: 'white', padding: '2px 8px', borderRadius: '8px', fontSize: '12px', marginLeft: '8px' }}>20 pts</span></h3>
             <p>Update merchant information and settings</p>
@@ -81,7 +109,9 @@ export const Merchants = () => {
             </ul>
           </div>
 
-          <div className="feature-card">
+          <div className="feature-card"
+          onClick={handleMerchantDetailClick}
+          >
             <div className="feature-icon">🔍</div>
             <h3>Merchant Details View <span style={{ backgroundColor: '#667eea', color: 'white', padding: '2px 8px', borderRadius: '8px', fontSize: '12px', marginLeft: '8px' }}>25 pts</span></h3>
             <p>View comprehensive merchant information</p>

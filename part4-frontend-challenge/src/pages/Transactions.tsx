@@ -1,30 +1,27 @@
 import { useState } from 'react';
 import { FilterState, DEFAULT_FILTERS } from '../types/transaction';
 import { useTransactions } from '../hooks/useTransactions';
+import { createTransaction } from '../services/transactionService';
 import { TransactionFilters } from '../components/common/TransactionFilters';
 import { TransactionSummary } from '../components/common/TransactionSummary';
 import { TransactionList } from '../components/common/TransactionList';
+import { AddTransactionModal } from '../components/modal/AddTransactionModal';
 
 export const Transactions = () => {
-  // default merchant ID
   const defaultMerchantId = import.meta.env.VITE_DEFAULT_MERCHANT_ID || 'MCH-00009';
-
-  // state to hold the merchant ID input
   const [merchantIdInput, setMerchantIdInput] = useState(defaultMerchantId);
   const [merchantId, setMerchantId] = useState(defaultMerchantId);
-
   const [filters, setFilters] = useState<FilterState>(DEFAULT_FILTERS);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   const { data, loading, error, refetch } = useTransactions(merchantId, filters);
 
-  // handle merchant submit
   const handleMerchantSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setMerchantId(merchantIdInput);
     setFilters(DEFAULT_FILTERS);
   };
 
-  // pagination handlers
   const handleNextPage = () => {
     if (data && (filters.page + 1) * filters.size < data.totalTransactions) {
       setFilters(prev => ({ ...prev, page: prev.page + 1 }));
@@ -37,50 +34,61 @@ export const Transactions = () => {
     }
   };
 
-  // calculate total pages
   const totalPages = data ? Math.ceil(Math.min(data.totalTransactions, 60) / filters.size) : 0;
 
   return (
-    <main className="container">
-      <h1>Transaction Dashboard</h1>
+    <main className="container mx-auto p-6">
+      <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-6">
+        <h1 className="text-3xl font-bold text-gray-800 mb-4 md:mb-0">Transaction Dashboard</h1>
+      </div>
 
       {/* Merchant ID input */}
-      <form onSubmit={handleMerchantSubmit} className="merchant-form" style={{ marginBottom: '1rem' }}>
-        <label htmlFor="merchantId" style={{ marginRight: '0.5rem' }}>Merchant ID:</label>
+      <form
+        onSubmit={handleMerchantSubmit}
+        className="flex flex-col sm:flex-row items-start sm:items-center gap-3 mb-6"
+      >
+        <label htmlFor="merchantId" className="font-medium text-gray-700">
+          Merchant ID:
+        </label>
         <input
           type="text"
           id="merchantId"
           value={merchantIdInput}
           onChange={(e) => setMerchantIdInput(e.target.value)}
-          style={{ padding: '0.5rem', borderRadius: '4px', border: '1px solid #ccc', marginRight: '0.5rem' }}
+          className="p-2 rounded-lg border border-gray-300 w-full sm:w-64 focus:ring-2 focus:ring-blue-400 focus:outline-none"
         />
-        <button type="submit" style={{ padding: '0.5rem 1rem', borderRadius: '4px', background: '#3b82f6', color: '#fff' }}>
+        {/* <button
+          type="submit"
+          className="px-4 py-2 rounded-lg bg-blue-600 text-white font-medium hover:bg-blue-700 transition"
+        >
           Load
-        </button>
+        </button> */}
       </form>
 
-      <p className="subtitle">Currently Viewing: {merchantId}</p>
+      <p className="text-gray-600 mb-6">
+        Currently Viewing: <span className="font-semibold">{merchantId}</span>
+      </p>
 
       {/* Filters */}
-      <div className="filters-section">
+      <div className="mb-6">
         <TransactionFilters
           filters={filters}
-          onFilterChange={(newFilters) => setFilters(prev => ({ ...prev, ...newFilters, page: 0 }))}
+          onFilterChange={(newFilters) =>
+            setFilters((prev) => ({ ...prev, ...newFilters, page: 0 }))
+          }
         />
       </div>
 
       {/* Error */}
       {error && (
-        <div className="error-message" style={{ padding: '1rem', background: '#fee2e2', borderRadius: '8px', color: '#991b1b', margin: '1rem 0' }}>
-          Error loading transactions: {error.message}
+        <div className="p-4 mb-6 rounded-lg bg-red-50 border border-red-200 text-red-700 shadow-sm">
+          <strong>Error:</strong> {error.message}
         </div>
       )}
 
       {/* Loading */}
       {loading && !data && (
-        <div className="loading-message" style={{ padding: '2rem', textAlign: 'center', color: '#64748b' }}>
-          Loading transactions...
-        </div>
+        <div className="p-6 text-center text-gray-500 text-lg">Loading transactions...</div>
       )}
 
       {/* Data */}
@@ -88,46 +96,48 @@ export const Transactions = () => {
         <>
           {/* No transactions */}
           {data.transactions?.length === 0 && !loading && (
-            <div className="no-data-message" style={{ padding: '1rem', background: '#e0f2fe', borderRadius: '8px', color: '#0369a1', marginTop: '1rem' }}>
+            <div className="p-4 bg-yellow-50 text-yellow-700 rounded-lg mb-6 shadow-sm">
               No transactions found for the selected filters.
             </div>
           )}
 
-          {/* Transactions exist */}
           {data.transactions?.length > 0 && (
             <>
-              <div className="summary-section">
+              <div className="summary-section mb-6">
                 <TransactionSummary
                   transactions={data.transactions}
                   totalTransactions={data.totalTransactions}
                 />
               </div>
 
-              <div className="transactions-section">
-                <TransactionList
-                  transactions={data.transactions}
-                  loading={loading}
-                />
+              <div className="transactions-section mb-6 bg-white shadow rounded-lg overflow-hidden">
+                <TransactionList transactions={data.transactions} loading={loading} />
               </div>
 
               {/* Pagination */}
-              <div className="pagination-section" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '1rem', marginTop: '1rem' }}>
+              <div className="pagination-section flex justify-center items-center gap-4">
                 <button
                   onClick={handlePrevPage}
                   disabled={filters.page === 0}
-                  style={{ padding: '0.5rem 1rem', borderRadius: '4px', background: '#e5e7eb', cursor: filters.page === 0 ? 'not-allowed' : 'pointer' }}
+                  className={`px-4 py-2 rounded-lg font-medium transition ${filters.page === 0
+                    ? 'bg-gray-200 cursor-not-allowed'
+                    : 'bg-gray-100 hover:bg-gray-200'
+                    }`}
                 >
                   Previous
                 </button>
 
-                <span>
+                <span className="font-medium text-gray-700">
                   Page {filters.page + 1} of {totalPages}
                 </span>
 
                 <button
                   onClick={handleNextPage}
                   disabled={filters.page + 1 >= totalPages}
-                  style={{ padding: '0.5rem 1rem', borderRadius: '4px', background: '#e5e7eb', cursor: filters.page + 1 >= totalPages ? 'not-allowed' : 'pointer' }}
+                  className={`px-4 py-2 rounded-lg font-medium transition ${filters.page + 1 >= totalPages
+                    ? 'bg-gray-200 cursor-not-allowed'
+                    : 'bg-gray-100 hover:bg-gray-200'
+                    }`}
                 >
                   Next
                 </button>
@@ -136,6 +146,19 @@ export const Transactions = () => {
           )}
         </>
       )}
+
+      {/* Add Transaction Modal */}
+      <AddTransactionModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        merchantId={merchantId}
+        onSubmit={async (payload) => {
+          console.log('Create transaction :: ', payload);
+          await createTransaction(payload);
+          await refetch();
+          setIsModalOpen(false);
+        }}
+      />
     </main>
   );
 };

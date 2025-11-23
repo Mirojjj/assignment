@@ -66,3 +66,24 @@ export const DEFAULT_FILTERS: FilterState = {
   status: undefined,
   searchQuery: undefined,
 };
+
+export interface CreateTransactionPayload {
+  merchantId: string;
+  gpAcquirerId: number;
+  gpIssuerId: number;
+  amount: number;
+  currency: string;
+  cardType: string;
+  cardLast4: string;
+  authCode: string;
+  responseCode: string;
+}
+
+export interface CreateTransactionResponse {
+  response_code: string;
+  response_message: string;
+  data: {
+    terminalId: string;
+    message: string;
+  };
+}
