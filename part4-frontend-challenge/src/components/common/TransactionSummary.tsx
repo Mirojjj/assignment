@@ -14,9 +14,10 @@ interface Transaction {
 interface TransactionSummaryProps {
   transactions: Transaction[];
   totalTransactions: number;
+  onTransactionAdded?: () => void;
 }
 
-export const TransactionSummary = ({ transactions, totalTransactions }: TransactionSummaryProps) => {
+export const TransactionSummary = ({ transactions, totalTransactions, onTransactionAdded }: TransactionSummaryProps) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [notification, setNotification] = useState<{ message: string; type: ToastType } | null>(null);
 
@@ -45,7 +46,9 @@ export const TransactionSummary = ({ transactions, totalTransactions }: Transact
           type: 'success'
         });
         setIsModalOpen(false);
-        // Ideally, we would trigger a refresh of the transaction list here
+        if (onTransactionAdded) {
+          onTransactionAdded();
+        }
       } else {
         setNotification({
           message: "Failed to add transaction: " + (response.response_message || "Unknown error"),

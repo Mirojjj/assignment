@@ -1,18 +1,15 @@
 import { useState } from 'react';
 import { FilterState, DEFAULT_FILTERS } from '../types/transaction';
 import { useTransactions } from '../hooks/useTransactions';
-import { createTransaction } from '../services/transactionService';
 import { TransactionFilters } from '../components/common/TransactionFilters';
 import { TransactionSummary } from '../components/common/TransactionSummary';
 import { TransactionList } from '../components/common/TransactionList';
-import { AddTransactionModal } from '../components/modal/AddTransactionModal';
 
 export const Transactions = () => {
   const defaultMerchantId = import.meta.env.VITE_DEFAULT_MERCHANT_ID || 'MCH-00009';
   const [merchantIdInput, setMerchantIdInput] = useState(defaultMerchantId);
   const [merchantId, setMerchantId] = useState(defaultMerchantId);
   const [filters, setFilters] = useState<FilterState>(DEFAULT_FILTERS);
-  const [isModalOpen, setIsModalOpen] = useState(false);
 
   const { data, loading, error, refetch } = useTransactions(merchantId, filters);
 
@@ -57,12 +54,6 @@ export const Transactions = () => {
           onChange={(e) => setMerchantIdInput(e.target.value)}
           className="p-2 rounded-lg border border-gray-300 w-full sm:w-64 focus:ring-2 focus:ring-blue-400 focus:outline-none"
         />
-        {/* <button
-          type="submit"
-          className="px-4 py-2 rounded-lg bg-blue-600 text-white font-medium hover:bg-blue-700 transition"
-        >
-          Load
-        </button> */}
       </form>
 
       <p className="text-gray-600 mb-6">
@@ -107,6 +98,7 @@ export const Transactions = () => {
                 <TransactionSummary
                   transactions={data.transactions}
                   totalTransactions={data.totalTransactions}
+                  onTransactionAdded={refetch}
                 />
               </div>
 
@@ -146,19 +138,6 @@ export const Transactions = () => {
           )}
         </>
       )}
-
-      {/* Add Transaction Modal */}
-      <AddTransactionModal
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-        merchantId={merchantId}
-        onSubmit={async (payload) => {
-          console.log('Create transaction :: ', payload);
-          await createTransaction(payload);
-          await refetch();
-          setIsModalOpen(false);
-        }}
-      />
     </main>
   );
 };
