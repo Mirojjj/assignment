@@ -68,6 +68,8 @@ public class MerchantServiceImpl implements MerchantService {
                 .merchantTags(result.getMerchantTags())
                 .merchantCategory(result.getMerchantCategory())
                 .merchantType(result.getMerchantType())
+                .paymentMethod(result.getPaymentMethod())
+                .merchantTags(result.getMerchantTags())
                 .build();
     }
 

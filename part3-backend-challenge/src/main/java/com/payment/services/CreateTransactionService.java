@@ -6,6 +6,6 @@ import com.payment.responses.CreateTransactionResponse;
 
 public interface CreateTransactionService {
 
-    CreateTransactionResponse createTransaction(CreateTransactionRequestPayloadWithMerchantId request);
+    CreateTransactionResponse createTransaction(CreateTransactionRequestPayload request);
 
 }

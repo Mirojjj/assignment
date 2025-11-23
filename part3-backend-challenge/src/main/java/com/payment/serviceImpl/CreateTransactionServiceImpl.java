@@ -28,7 +28,7 @@ public class CreateTransactionServiceImpl implements CreateTransactionService {
     }
 
     @Override
-    public CreateTransactionResponse createTransaction(CreateTransactionRequestPayloadWithMerchantId request) {
+    public CreateTransactionResponse createTransaction(CreateTransactionRequestPayload request) {
 
         TransactionMaster entity =  toTransactionMaster(request);
 
@@ -43,7 +43,7 @@ public class CreateTransactionServiceImpl implements CreateTransactionService {
 
     }
 
-    private TransactionMaster toTransactionMaster(CreateTransactionRequestPayloadWithMerchantId request) {
+    private TransactionMaster toTransactionMaster(CreateTransactionRequestPayload request) {
         TransactionMaster tm = new TransactionMaster();
         tm.setTxnId(System.currentTimeMillis());
         tm.setAmount(new BigDecimal(request.amount()));

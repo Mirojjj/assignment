@@ -158,18 +158,18 @@ public class TransactionController {
     }
 
 
-    @Post("/{merchantId}/transactions")
+    @Post("/transactions")
     @Operation(
             summary = "Create new transaction",
             description = "Creates a new transaction for a merchant. TODO: Add validation, error handling, and business logic."
     )
-    public RestResponse createTransaction(@PathVariable String merchantId, @Body CreateTransactionRequestPayload request) {
+    public RestResponse createTransaction(@Body CreateTransactionRequestPayload request) {
         logger.info("Received create transaction payload" + request);
 
-        CreateTransactionRequestPayloadWithMerchantId requestEntity = toCreateTransactionRequestPayloadWithMerchantId(merchantId, request);
+//        CreateTransactionRequestPayloadWithMerchantId requestEntity = toCreateTransactionRequestPayloadWithMerchantId(merchantId, request);
 
 
-        var result = this.createTransactionControllerUseCase.execute(UseCaseContext.empty(), requestEntity);
+        var result = this.createTransactionControllerUseCase.execute(UseCaseContext.empty(), request);
         if (result.hasError()) {
             return RestResponse.error("400", "Error inserting data into db");
         }

@@ -11,6 +11,7 @@ import jakarta.validation.constraints.Positive;
 @Serdeable
 @Introspected
 public record CreateTransactionRequestPayload(
+        @NotBlank String merchantId,
         @NotBlank @Positive Long gpAcquirerId,
         @NotBlank @Positive Long gpIssuerId,
         @NotBlank @Positive Integer amount,
