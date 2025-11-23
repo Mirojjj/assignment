@@ -22,6 +22,6 @@ public class DeleteMerchantUseCase implements UseCase<DeleteMerchantPayload, Del
     @Override
     public Result<DeleteMerchantResponse> execute(UseCaseContext context, DeleteMerchantPayload request) {
         var result = this.merchantService.deleteMerchant(request.merchantId());
-        return null;
+        return Result.ok(result);
     }
 }

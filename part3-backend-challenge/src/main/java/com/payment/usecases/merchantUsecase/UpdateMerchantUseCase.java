@@ -25,6 +25,6 @@ public class UpdateMerchantUseCase implements UseCase<UpdateMerchantPayloadWithM
     @Override
     public Result<UpdateMerchantResponse> execute(UseCaseContext context, UpdateMerchantPayloadWithMerchantId request) {
         var result =  this.merchantService.updateMerchant(request);
-        return null;
+        return Result.ok(result);
     }
 }

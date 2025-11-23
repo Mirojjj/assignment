@@ -5,21 +5,23 @@ import io.micronaut.serde.annotation.Serdeable;
 import io.soabase.recordbuilder.core.RecordBuilder;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 @Serdeable
 @Introspected
 @RecordBuilder
 public record MerchantDto(
-        Long txnId,
-        BigDecimal amount,
-        String currency,
-        String status,
-        String cardType,
-        String cardLast4,
-        Long acquirer,
-        Long issuer,
-        String merchantId,
-        String authCode
-) {
-
-}
+        Integer merchantId,
+        String merchantName,
+        String merchantStatus,
+        String contactInfo,
+        String merchantCategory,
+        String merchantLocation,
+        BigDecimal merchantRating,
+        Integer numOrders,
+        String paymentMethod,
+        String merchantLogo,
+        String merchantWebsite,
+        String merchantType,
+        List<String> merchantTags
+){ }

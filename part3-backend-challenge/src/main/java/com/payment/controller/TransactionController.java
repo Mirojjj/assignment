@@ -7,7 +7,6 @@ import com.payment.rest.RestResponse;
 import com.payment.usecases.CreateTransactionControllerUseCase;
 import com.payment.usecases.TransactionControllerUseCase;
 import com.payment.usecases.UseCaseContext;
-import com.payment.usecases.UseCaseRequest;
 import com.payment.usecases.merchantUsecase.*;
 import io.micronaut.http.annotation.*;
 import io.swagger.v3.oas.annotations.Operation;
@@ -224,15 +223,19 @@ public class TransactionController {
     @Put("/{merchantId}")
     public RestResponse updateMerchant(@PathVariable String merchantId, @Body UpdateMerchantPayload request) {
         UpdateMerchantPayloadWithMerchantId requestEntity = UpdateMerchantPayloadWithMerchantIdBuilder.builder()
-                .amount(request.amount())
-                .merchatnId(merchantId)
-                .authCode(request.authCode())
-                .cardLast4(request.cardLast4())
-                .cardType(request.cardType())
-                .currency(request.currency())
-                .gpAcquirerId(request.gpAcquirerId())
-                .gpIssuerId(request.gpIssuerId())
-                .responseCode(request.responseCode())
+                .merchantId(Integer.parseInt(merchantId))
+                .merchantName(request.merchantName())
+                .merchantStatus(request.merchantStatus())
+                .contactInfo(request.contactInfo())
+                .merchantCategory(request.merchantCategory())
+                .merchantLocation(request.merchantLocation())
+                .merchantLogo(request.merchantLogo())
+                .merchantType(request.merchantType())
+                .numOrders(request.numOrders())
+                .paymentMethod(request.paymentMethod())
+                .merchantTags(request.merchantTags())
+                .merchantRating(request.merchantRating())
+                .merchantWebsite(request.merchantWebsite())
                 .build();
 
         var result = this.updateMerchantUseCase.execute(UseCaseContext.empty(), requestEntity);

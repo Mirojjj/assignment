@@ -25,6 +25,6 @@ public class MerchantDetailUseCase implements UseCase<MerchantDetailRequestPaylo
     @Override
     public Result<MerchantDetailsResponse> execute(UseCaseContext context,  MerchantDetailRequestPayload request) {
         var result = this.merchantService.getMerchantDetails(request.merchantId());
-        return null;
+        return Result.ok(result);
     }
 }
